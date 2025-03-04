@@ -1,8 +1,10 @@
+import logging
 import math
 import os
-import logging
 from typing import Any
+
 import pandas as pd
+
 from src.utils import df_to_transactions
 
 path_file = os.path.dirname(os.path.abspath(__file__))
@@ -33,7 +35,7 @@ def investment_bank(
             num += math.ceil(abs(i["Сумма операции"]) / limit) * limit - abs(
                 i["Сумма операции"]
             )
-    return num
+    return round(num, 2)
 
 
 if __name__ == "__main__":

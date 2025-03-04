@@ -1,8 +1,8 @@
 import json
 import logging
+import os
 from pathlib import Path
 from typing import Any
-import os
 
 import pandas as pd
 import requests
@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 
 current_dir = Path(__file__).parent.parent.resolve()
 dir_transactions_excel = current_dir / "data" / "operations.xlsx"
+user_setting = current_dir / "user_settings.json"
 
 path_file = os.path.dirname(os.path.abspath(__file__))
 
@@ -123,23 +124,25 @@ def exchange_rate() -> list:
     """Функция, которая извлекает курсы обмена для USD и EUR к RUB
     путем вызова внешнего API."""
     load_dotenv()
-    apikey = os.getenv('API-KEY_EXCHANGE')
-    headers = {
-        "apikey": f"{apikey}"
-    }
-    user_currencies = reading_json_file("C:/Users/111/PycharmProjects/coursework_1/user_settings.json")[0]['user_currencies']
+    apikey = os.getenv("API-KEY_EXCHANGE")
+    headers = {"apikey": f"{apikey}"}
+    user_currencies = reading_json_file(
+        user_setting
+    )[0]["user_currencies"]
     lst = []
     try:
         for i in user_currencies:
-            logger.info('Попытка подключения через API к сайту с курсом валют')
+            logger.info("Попытка подключения через API к сайту с курсом валют")
             url = f"https://api.apilayer.com/exchangerates_data/convert?to=RUB&from={i}&amount=1"
             response = requests.get(url, headers=headers)
-            dct = {"currency": i, "rate": response.json()['info']['rate']}
+            dct = {"currency": i, "rate": round(response.json()["info"]["rate"], 2)}
+            logger.info("Успешное подключение через API к сайту с курсом валют")
             lst.append(dct)
-            logger.info('Успешное подключение через API к сайту с курсом валют')
         return lst
     except requests.exceptions.RequestException:
-        logger.warning('Возможна проблема с подключением через API к сайту с курсом валют')
+        logger.warning(
+            "Возможна проблема с подключением через API к сайту с курсом валют"
+        )
 
 
 def get_price_stocks_snp500() -> list:
@@ -147,7 +150,9 @@ def get_price_stocks_snp500() -> list:
     путем вызова внешнего API."""
     load_dotenv()
     api_stock = os.getenv("API-KEY_STOCK")
-    user_stocks = reading_json_file("C:/Users/111/PycharmProjects/coursework_1/user_settings.json")[0]['user_stocks']
+    user_stocks = reading_json_file(
+        user_setting
+    )[0]["user_stocks"]
     price_stocks = []
 
     try:
@@ -157,7 +162,10 @@ def get_price_stocks_snp500() -> list:
                 f"https://api.twelvedata.com/price?symbol={stock}&apikey={api_stock}"
             )
             dict_result = response.json()
-            price_element = dict_result.get("price")
+            price_element = {
+                "stock": stock,
+                "price": round(float(dict_result.get("price")), 2),
+            }
             logger.info("Успешное подключение через API к сайту со стоимостью акций")
             price_stocks.append(price_element)
 
@@ -169,7 +177,7 @@ def get_price_stocks_snp500() -> list:
 
 
 if __name__ == "__main__":
-    pass
+    # pass
     # print(reading_xlsx(dir_transactions_excel))
-    # print(get_price_stocks_snp500())
-    # print(exchange_rate())
+    print(get_price_stocks_snp500())
+    print(exchange_rate())

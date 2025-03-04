@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from src.views import each_card, day_time_now, top_transactions
+from src.views import day_time_now, each_card, top_transactions
 
 
 @pytest.mark.parametrize(

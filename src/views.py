@@ -1,12 +1,12 @@
 import json
-import os
 import logging
+import os
 from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
 
-from src.utils import reading_xlsx, get_price_stocks_snp500, exchange_rate
+from src.utils import exchange_rate, get_price_stocks_snp500, reading_xlsx
 
 current_dir = Path(__file__).parent.parent.resolve()
 dir_transactions_excel = current_dir / "data" / "operations.xlsx"
@@ -31,8 +31,9 @@ def changing_df(path: str, date: str) -> pd.DataFrame:
     """Функция, которая возвращает датафрейм для дальнейших работ с ним."""
     df = reading_xlsx(path=path)
     date = pd.to_datetime(date, dayfirst=False)
+    start_of_month = date.replace(day=1)
     df = df[
-        (df["Дата операции"] >= date.replace(day=1)) & (df["Дата операции"] <= date)
+        (df["Дата операции"] >= start_of_month) & (df["Дата операции"] <= date)
     ]
     return df
 
@@ -153,4 +154,4 @@ def views(path: str, date: str) -> json:
 
 if __name__ == "__main__":
     pass
-    # print(changing_df(dir_transactions_excel, "02.02.2021"))
+    # print(each_card(dir_transactions_excel, "02.02.2021"))

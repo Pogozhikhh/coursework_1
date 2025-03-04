@@ -1,9 +1,9 @@
+import json
 import os
 from datetime import datetime
 from typing import Optional
-import pandas as pd
-import json
 
+import pandas as pd
 from dateutil.relativedelta import relativedelta
 
 
@@ -17,8 +17,8 @@ def decorator_with_args(file: str):
                 absolute_file_path = os.path.abspath(file)
                 # Убедимся, что папка для файла существует
                 os.makedirs(os.path.dirname(absolute_file_path), exist_ok=True)
-                with open(file, "w", encoding="utf-8") as file_2:
-                    json.dump(result.to_dict("records"), file_2, ensure_ascii=False)
+                with open(file, "w", encoding="utf-8") as report:
+                    json.dump(result.to_dict("records"), report, ensure_ascii=False)
                 return result
             except FileNotFoundError:
                 print("Не получилось записать информацию в файл")
